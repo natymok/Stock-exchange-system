@@ -1,34 +1,27 @@
-const users=require('../Model/user')
-const otpModel=require('../Model/Otp')
+const user=require('../../Model/user')
+const otpModel=require('../../Model/Otp')
 const nodemailer=require('nodemailer')
-const user = require('../Model/user')
-exports.signup=(req,res)=>{
-  users.findOne({email:req.body.email}).then((data)=>{
+exports.otpsend=(req,res)=>{
+user.findOne({email:req.body.email}).then((data)=>{
     if(data){
-      res.status(400).json({
-        error:"email already exist"
-    })
+         console.log(data)
+        sendOtp(req.body.email)
+
     }
     else{
-    
-    
-                const _user=new users({
-                  ...req.body
-                })
-                _user.save((err,data)=>{
-                    if(data){
-                      sendOtp(req.body.email)
+        res.status(400).json({
+            error:"Email not exist"
+        })
+    }
 
-                    }
-                })
-           
-                 
-             
-           }
-           
-          })
-          
-  sendOtp=(email)=>{
+})
+.catch((err)=>{
+    res.status(400).json({
+        error:err
+    })
+})
+
+sendOtp=(email)=>{
      
     const otP=`${Math.floor(100000+Math.random()*900000)}`
              // create reusable transporter object using the default SMTP transport
@@ -44,7 +37,7 @@ exports.signup=(req,res)=>{
   let mailoption = {
     from: '"Ethio Stock  👻" <natymok1010@gmail.com>', // sender address
     to: email,
-    subject: "Verify Your Email ✔", // Subject line
+    subject: "reset password ✔", // Subject line
     html: `<p> Enter <b> ${otP} </b>  in the app to verify Your Email  <b>This code</b> expires after 1 hour</p>`, // html body
   };
 
@@ -64,7 +57,6 @@ exports.signup=(req,res)=>{
         if(data){
           transporter.sendMail(mailoption).then((data)=>{
             if(data){
-              console.log(data)
               res.status(200).json({
                 message:'we have sent otp to your email check your email'
               })
@@ -85,6 +77,4 @@ exports.signup=(req,res)=>{
       })
 
   }
-
 }
-
