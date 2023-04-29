@@ -87,4 +87,3 @@ exports.signup=(req,res)=>{
   }
 
 }
-
